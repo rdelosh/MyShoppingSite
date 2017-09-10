@@ -1,0 +1,65 @@
+
+
+import java.io.IOException;
+import beans.Product;
+import java.util.LinkedList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import bans.Product;
+/**
+ * Servlet implementation class AddToCartServlet
+ */
+@WebServlet("/AddToCartServlet")
+public class AddToCartServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public AddToCartServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		HttpSession mysession = request.getSession();
+		String itemID = request.getParameter("idtocart");
+		LinkedList<Product> mylistofitems=null;
+		
+		if(mysession.getAttribute("listofitems")==null){
+			mylistofitems = new LinkedList<Product>();
+			mysession.setAttribute("listofitems", mylistofitems);
+					
+			
+		}else if(mysession.getAttribute("listofitems")!=null){
+			mylistofitems = (LinkedList<Product>) (mysession.getAttribute("listofitems"));
+		}
+			
+		if(itemID!=null){
+			
+			mylistofitems.add(new Product(Integer.parseInt(itemID)));
+			
+			mysession.setAttribute("listofitems", mylistofitems);
+			request.getRequestDispatcher("viewcart.jsp").forward(request, response);
+		}
+		
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

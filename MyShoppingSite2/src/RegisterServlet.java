@@ -1,0 +1,89 @@
+
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import DB.DBconnection;
+
+
+/**
+ * Servlet implementation class RegisterServlet
+ */
+@WebServlet("/RegisterServlet")
+public class RegisterServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public RegisterServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doPost(request,response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		
+		int newidnumber=0;
+		String firstname = request.getParameter("firstname");
+		String lastname = request.getParameter("lastname");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String cpassword = request.getParameter("cpassword");
+		
+		DBconnection newDBconn = new DBconnection();
+		try {
+			
+			Connection myConn = newDBconn.getConnection();
+			Statement myStmt = myConn.createStatement();
+			ResultSet myRs = myStmt.executeQuery("select max(iduser) from user");
+			while(myRs.next()){
+				newidnumber = myRs.getInt(1)+1;
+			}
+			
+			PreparedStatement pstmt = myConn.prepareStatement("insert into user(iduser,firstname,lastname,email,password)values(?,?,?,?,SHA1(?))");
+			pstmt.setInt(1, newidnumber);
+			pstmt.setString(2, firstname);
+			pstmt.setString(3, lastname);
+			pstmt.setString(4, email);
+			pstmt.setString(5, (password));
+			pstmt.executeUpdate();
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println("erro5");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("erro6");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		request.getRequestDispatcher("/registersuccesful.jsp").forward(request,response);
+		//response.sendRedirect(request.getContextPath()+"/index.jsp");
+	}
+
+}
